@@ -1,0 +1,534 @@
+/*
+ * Beeliv public marketing site - scoped design tokens + type/skeleton primitives.
+ *
+ * SCOPE: everything here is attached to the `.public-site` wrapper rendered by
+ * app/(public)/layout.tsx. Nothing touches :root or the dashboards' tokens in
+ * app/globals.css (Inter headings, #5B21B6 purple, #E3A93F gold stay as-is).
+ *
+ * Token values mirror C:\Users\USER\Documents\beeliv-website\tokens.css
+ * (LOCKED 26 Sep 2026). Fonts are loaded with next/font in the layout
+ * (Newsreader) and app/layout.tsx (Karla, already global) - no @import here.
+ *
+ * Rules live in cascade layers so Tailwind utilities used in the components
+ * always win over these primitives (unlayered CSS would beat them).
+ */
+@layer theme, base, components, utilities;
+
+.public-site {
+  /* Colour */
+  --beeliv-purple: #5b087b; /* primary: CTAs, links, active states */
+  --beeliv-bright-purple: #8a0aa3; /* highlighted words / small accents only */
+  --deep-plum: #250044; /* dark brand sections */
+  --ink: #11111b;
+  --warm-white: #faf9f7; /* page background */
+  --pure-white: #ffffff;
+  --muted-text: #686672;
+  --soft-border: #e8e5ee;
+  /* Gold: detail only. Never buttons, links, fills or gradients. */
+  --antique-gold: #c9a45c; /* on dark: labels, step numbers, rings */
+  --deep-gold: #8c6a2e; /* small gold text on warm white: eyebrows */
+  --purple-gradient: linear-gradient(135deg, #8a0aa3 0%, #5b087b 55%, #250044 100%);
+
+  /* One sculptural curve for every curved image */
+  --sculpt: 42% 0 0 0 / 88% 0 0 0;
+
+  /* Type families */
+  --font-display: var(--font-newsreader), system-ui, "Segoe UI", sans-serif;
+  --font-ui: var(--font-sans), "Inter", system-ui, -apple-system, "Segoe UI",
+    sans-serif;
+
+  /* Desktop layout unit: 1px at a 1440 viewport, scales down to the 820
+     desktop breakpoint, and stops growing above 1440. Wireframe pixel values are
+     written as calc(N * var(--u)). */
+  --u: calc(min(100vw / var(--ps-zoom, 1), 4000px) / 1440);
+  --ps-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Space between the 1440 content column and the viewport edge (0 below
+     1440). Bleed-off-edge images extend by this much so they still reach the
+     screen edge on wide monitors. */
+  --bleed: 0px;
+
+  background: var(--warm-white);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  overflow-x: clip;
+  flex: 1 1 auto;
+}
+
+@layer base {
+  .public-site a {
+    color: var(--beeliv-purple);
+    text-decoration: none;
+  }
+  .public-site a:hover {
+    color: var(--deep-plum);
+  }
+  .public-site h1,
+  .public-site h2,
+  .public-site h3,
+  .public-site p {
+    margin: 0;
+  }
+}
+
+@layer components {
+  /* Headings: Newsreader 500, upright, -0.01em. --fs-m is the mobile size,
+     --fs-d the wireframe's 1440 desktop size (both set per element). */
+  .ps-serif {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size-adjust: 0.5;
+    font-optical-sizing: auto;
+    letter-spacing: -0.01em;
+    line-height: 1.08;
+    text-wrap: balance;
+    font-size: calc(var(--fs-m, 30) * 1px);
+  }
+  /* Board-switch breakpoint (820px) — mirrors --breakpoint-wf-d in
+     app/globals.css. Was 1280px (the same stock-xl mismatch the Tailwind
+     `wf-d:` rename elsewhere in this file tree fixes); kept as a literal
+     here since raw @media conditions can't reference a Tailwind theme
+     variant name. */
+  @media (min-width: 820px) {
+    .ps-serif {
+      font-size: max(calc(var(--fs-m, 30) * 1px), calc(var(--fs-d, 30) * var(--u)));
+    }
+  }
+
+  .ps-eb {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--deep-gold);
+  }
+  @media (min-width: 820px) {
+    .ps-eb {
+      font-size: 12px;
+    }
+  }
+
+  .ps-bd {
+    font-size: 17px;
+    line-height: 1.65;
+    color: var(--muted-text);
+    max-width: 52ch;
+  }
+  .ps-sm {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--muted-text);
+  }
+  @media (min-width: 820px) {
+    .ps-sm {
+      font-size: 14px;
+      line-height: 1.55;
+    }
+  }
+
+  .ps-hl {
+    color: var(--beeliv-purple);
+  }
+  .ps-hl-b {
+    color: var(--beeliv-bright-purple);
+  }
+
+  .ps-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    height: 52px;
+    padding: 0 28px;
+    border-radius: 999px;
+    font-size: 15px;
+    font-weight: 600;
+    white-space: nowrap;
+    transition:
+      background-color 0.25s var(--ps-ease),
+      color 0.25s var(--ps-ease),
+      border-color 0.25s var(--ps-ease);
+  }
+  .ps-bp {
+    background: var(--beeliv-purple);
+    color: #fff;
+  }
+  .public-site .ps-bp:hover {
+    color: #fff;
+    background: var(--deep-plum);
+  }
+  .ps-bo {
+    border: 1.5px solid var(--beeliv-purple);
+    color: var(--beeliv-purple);
+  }
+  .public-site .ps-bo:hover {
+    background: var(--beeliv-purple);
+    color: #fff;
+  }
+  .ps-bw {
+    background: #fff;
+    color: var(--beeliv-purple);
+  }
+  .public-site .ps-bw:hover {
+    background: #f3eaf7;
+    color: var(--deep-plum);
+  }
+  .ps-bo-w {
+    border: 1.5px solid #fff;
+    color: #fff;
+  }
+  .public-site .ps-bo-w:hover {
+    background: #fff;
+    color: var(--beeliv-purple);
+  }
+
+  .ps-ln {
+    display: inline-block;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--beeliv-purple);
+    border-bottom: 1px solid currentColor;
+    padding-bottom: 3px;
+    align-self: flex-start;
+  }
+  /* Wireframe `a:hover`: text links darken to deep plum. Needed here because
+     this component-layer rule beats the base-layer `a:hover`. Instances that
+     force their own colour with a `!` utility (e.g. hero "Our Story") keep it. */
+  .public-site .ps-ln:hover {
+    color: var(--deep-plum);
+  }
+
+  /* Image slots: the wireframe's hatched placeholder. The tag/annotation
+     labels from the wireframe are design-tool notes and are not rendered. */
+  .ps-img {
+    background-color: #e8e5ee;
+    background-image: repeating-linear-gradient(
+      135deg,
+      transparent 0 14px,
+      rgba(17, 17, 27, 0.06) 14px 15px
+    );
+    border: 1px solid #e8e5ee;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .ps-img-dk {
+    background-color: #2b2632;
+    background-image: repeating-linear-gradient(
+      135deg,
+      transparent 0 14px,
+      rgba(255, 255, 255, 0.05) 14px 15px
+    );
+    border: 0;
+  }
+  .ps-img-dash {
+    border: 1.5px dashed #8e86a8;
+    background: rgba(236, 234, 242, 0.6);
+  }
+  .ps-sculpt {
+    border-radius: var(--sculpt);
+  }
+
+  .ps-cd {
+    background: #fff;
+    border: 1px solid var(--soft-border);
+    border-radius: 18px;
+  }
+  .ps-hr {
+    height: 1px;
+    background: var(--soft-border);
+    flex-shrink: 0;
+  }
+
+  .ps-chip {
+    font-size: 13px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgba(91, 8, 123, 0.06);
+    color: var(--muted-text);
+    white-space: nowrap;
+  }
+
+  /* Logo slots: desktop = dashed placeholder tile, mobile = borderless cell
+     separated by hairlines (Home-Mobile.dc.html marquee). */
+  .ps-logo {
+    font-size: 11px;
+    color: var(--beeliv-purple);
+    border: 1px dashed rgba(91, 8, 123, 0.35);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    height: 56px;
+    background: rgba(91, 8, 123, 0.05);
+    flex-shrink: 0;
+    padding: 0 8px;
+  }
+  @media (max-width: 819.98px) {
+    .ps-logo-cell {
+      height: 44px;
+      font-size: 10px;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+    }
+    .ps-logo-cell.ps-sep {
+      border-left: 1px solid var(--soft-border);
+    }
+  }
+
+  .ps-navlink {
+    font-size: 14px;
+    /* Karla (--font-ui) loads as a 200-800 variable font, so 800 is the
+       heaviest weight actually available - project lead: "make the desktop
+       nav text very bold" / "navs in all pages and sections" (2026-09-27).
+       Covers DesktopHeader, StickyBar and PageHeader (every inner page)
+       since they all render NavLink. */
+    font-weight: 800;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  @media (min-width: 1400px) {
+    .ps-navlink {
+      font-size: 15px;
+    }
+  }
+  .public-site .ps-navlink:hover {
+    color: var(--beeliv-purple);
+  }
+
+  /* Footer links: same "very bold" pass as the main nav, one notch lighter
+     (700, not 800) so the ps-eb column headings above them keep some
+     hierarchy - still reads as clearly, deliberately bold, not the old
+     unset/regular weight. */
+  .public-site .ps-ft a {
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 15px;
+    font-weight: 700;
+  }
+  .public-site .ps-ft a:hover {
+    color: #fff;
+  }
+
+  /* Horizontal swipe rows (mobile jobs carousel / editorial row). */
+  .ps-swipe {
+    scroll-snap-type: x mandatory;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .ps-swipe::-webkit-scrollbar {
+    display: none;
+  }
+  .ps-swipe > * {
+    scroll-snap-align: start;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Loading skeletons - Skel-*.dc.html boards.                          */
+/* Same DOM as the page, wrapped in .skel: text becomes soft blocks,    */
+/* media becomes flat tiles, everything shimmers. Rules mirror the      */
+/* wireframe's own skeleton stylesheet.                                 */
+/* ------------------------------------------------------------------ */
+@keyframes ps-skp {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@layer components {
+  .skel {
+    pointer-events: none;
+    user-select: none;
+  }
+  .skel .ps-sk {
+    -webkit-text-fill-color: transparent;
+    background: color-mix(in srgb, currentColor 14%, transparent);
+    border-radius: 6px;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    animation: ps-skp 1.6s ease-in-out infinite;
+  }
+  .skel .ps-img,
+  .skel .ps-img-dash {
+    background: #ece9f1 !important;
+    border-color: transparent !important;
+    animation: ps-skp 1.6s ease-in-out infinite;
+  }
+  .skel .ps-img.ps-img-dk {
+    background: #3a2452 !important;
+  }
+  .skel .ps-img > * {
+    visibility: hidden;
+  }
+  .skel .ps-btn,
+  .skel .ps-chip,
+  .skel .ps-logo {
+    -webkit-text-fill-color: transparent;
+    background: #e8e5ee !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+    animation: ps-skp 1.6s ease-in-out infinite;
+  }
+  .skel .ps-btn .ps-sk,
+  .skel .ps-chip .ps-sk,
+  .skel .ps-logo .ps-sk {
+    background: none;
+  }
+  .skel svg {
+    filter: grayscale(1) opacity(0.2);
+  }
+  .skel .ps-ln {
+    border-color: transparent;
+  }
+  /* Entrance animations never hide skeleton content. */
+  .skel [data-ps-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    clip-path: none !important;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .skel * {
+      animation: none !important;
+    }
+  }
+}
+
+/* Reduced motion: the clip-path "unveil" / bar draw-in must never leave content
+   clipped, whatever JS did during hydration. Final state = fully visible.
+   (Opacity/transform end states are handled by motion's reducedMotion="user".) */
+@layer components {
+  @media (prefers-reduced-motion: reduce) {
+    .public-site [data-ps-reveal] {
+      clip-path: none !important;
+    }
+    /* StepBar step numbers: motion writes inline opacity (0.25) during SSR /
+       hydration; force the final state. */
+    .public-site [data-ps-num] {
+      opacity: 1 !important;
+    }
+  }
+}
+
+/* Home hero stage floor for the in-between desktop widths (820-1439): the
+   1440x780 composition gets too short for its text stack there. Tuned by
+   measurement; see Hero.tsx. */
+.public-site {
+  --hero-min-h: 0px;
+  /* Screens wider than 1440: ScreenScale sets --ps-zoom = width / 1440 so the
+     whole site scales up like a larger laptop (no side margins). */
+  zoom: var(--ps-zoom, 1);
+}
+@media (min-width: 820px) and (max-width: 1439.98px) {
+  .public-site {
+    --hero-min-h: 600px;
+  }
+}
+@media (min-width: 820px) and (max-width: 1099.98px) {
+  .public-site {
+    --hero-min-h: 660px;
+  }
+}
+
+/* Mobile hero photo is a tall portrait; in a wide 480-819px box the default
+   centred crop cuts her head off, so anchor the crop near the top there. */
+@media (min-width: 480px) and (max-width: 819.98px) {
+  .public-site .hero-mobile-photo img {
+    object-position: 50% 22%;
+  }
+}
+
+/* Hero woman cutout, 960px and up: its arch-shaped overflow-hidden container
+   clips her sleeve/shoulder in a straight edge (reads as a box) once she sits
+   over the photo, so let her show in full there. */
+@media (min-width: 960px) {
+  .public-site .hero-cutout > div {
+    overflow: visible !important;
+    border-radius: 0 !important;
+  }
+}
+
+/* ============================================================================
+ * Compact straight nav (DesktopHeader/StickyBar/PageHeader, SiteHeader.tsx /
+ * PageHeader.tsx): project lead, 2026-10-01 - Duo Open, "desktop mode"
+ * phones, Kiosk and iPad portrait keep the real nav row + Log in/Get
+ * Started instead of dropping to the hamburger (moved from 1280px down to
+ * 960px). There's real room in 960-1279px, but not Full's room, so the
+ * header's own gaps/padding/logo/search-button already tighten via classes
+ * at the call sites (DesktopHeader, DesktopActions, PageHeader) - this just
+ * shrinks the one shared primitive (.ps-btn, used by all three headers'
+ * "Get Started" pill) that those call sites can't reach with a className.
+ * ============================================================================ */
+@media (min-width: 960px) and (max-width: 1279.98px) {
+  .public-site header .ps-btn {
+    height: 42px;
+    padding: 0 18px;
+    gap: 6px;
+    font-size: 13px;
+  }
+}
+
+/* ============================================================================
+ * Auth frame (components/public/auth/AuthFrame.tsx): two responsive bands.
+ * Project lead, 2026-10-01: a centred "popup card" treatment was tried for
+ * the 820-1279px / short-height range (iPad portrait, Surface Duo Open) and
+ * REJECTED outright ("you still used the design i rejected") - not a detail
+ * fix, the whole popup-card direction. Replaced with this: the SAME
+ * edge-to-edge split-panel structure as full desktop at every width from
+ * 820px up, never a floating centred card. The brand panel's column width
+ * is a fluid clamp() (not a fixed number copied from one device), so every
+ * in-between size - Duo Open 1114px, iPad 1024px, Kiosk 1080px - gets its
+ * own proportional panel width rather than inheriting another device's
+ * exact numbers. BrandPanel itself (component file) hides the illustration/
+ * body copy/role-card extras and tightens padding+type below the Full
+ * threshold, where there isn't room for them. Phone (<820) is untouched.
+ *
+ *   phone : < 820px wide                        - unchanged mobile curve header
+ *   split : >= 820px wide                        - edge-to-edge panel + form
+ *     - panel column: clamp(260px, 32vw, 520px) below the Full threshold
+ *     - full sub-range (>= 1280px wide AND >= 780px tall): panel widens to
+ *       the original calc(620*var(--u)) and the illustration/body copy
+ *       reappear (BrandPanel component classes) - unchanged from before the
+ *       popup-card experiment.
+ *
+ * Class is `.au-frame`, NOT `.au-shell`: `.au-shell` is a bare var-scope hook
+ * (auth.css: --au-error) that Contact/Request ALSO put on their own root div
+ * to inherit that one variable (see ContactShell.tsx/RequestShell.tsx) - it
+ * must carry no layout rules, or it silently wrecks those unrelated pages.
+ * AuthFrame's root div carries both classes: `au-shell au-frame`.
+ * ============================================================================ */
+.public-site .au-backlink,
+.public-site .au-legal {
+  display: none;
+}
+
+@media (min-width: 820px) {
+  .public-site .au-frame {
+    display: grid;
+    grid-template-columns: calc(620 * var(--u)) minmax(0, 1fr);
+    min-height: calc(100dvh / var(--ps-zoom, 1));
+  }
+  .public-site .au-backlink {
+    display: flex;
+    height: auto;
+    padding-top: 0;
+  }
+  .public-site .au-legal {
+    display: flex;
+    padding-bottom: 0;
+  }
+}
+
+@media (min-width: 1280px) and (min-height: 780px) {
+  .public-site .au-formcol {
+    padding: 32px 64px 40px;
+  }
+  .public-site .au-backlink {
+    height: 44px;
+  }
+}
